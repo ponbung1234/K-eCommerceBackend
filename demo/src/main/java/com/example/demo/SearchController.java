@@ -1,8 +1,6 @@
 package com.example.demo;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -29,7 +27,8 @@ public class SearchController {
 			throws SQLException, IOException {
 
 		JsonFactory jsonFactory = new JsonFactory();
-		JsonGenerator jsonGenerator = jsonFactory.createGenerator(new File("test.json"), JsonEncoding.UTF8);
+		ByteArrayOutputStream json_temp = new ByteArrayOutputStream();
+		JsonGenerator jsonGenerator = jsonFactory.createGenerator(json_temp, JsonEncoding.UTF8);
 		Database db = new Database();
 		Connection con = db.connect();
 		Statement stm = con.createStatement();
@@ -67,18 +66,18 @@ public class SearchController {
 		jsonGenerator.writeRaw(']');
 		jsonGenerator.close();
 		db.close();
-		BufferedReader br = new BufferedReader(new FileReader(new File("test.json")));
-		String returnResult = "";
-
-		while (true) {
-			final String line = br.readLine();
-			if (line == null)
-				break;
-
-			returnResult += line;
-		}
-		br.close();
-		return returnResult;
+//		BufferedReader br = new BufferedReader(new FileReader(new File("test.json")));
+//		String returnResult = "";
+//
+//		while (true) {
+//			final String line = br.readLine();
+//			if (line == null)
+//				break;
+//
+//			returnResult += line;
+//		}
+//		br.close();
+		return json_temp.toString();
 
 	}
 }

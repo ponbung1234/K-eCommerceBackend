@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Hello CORS</title>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="hello.js"></script>
+</head>
+
+<body>
+	<div>
+		<p class="greeting-id">The ID is</p>
+		<p class="greeting-content">The content is</p>
+		<form action="http://localhost:8080/search" method="post">
+			Search Product: <input type="text" name="input"><br> <input
+				type="submit" value="Submit">
+		</form>
+		<button type="button" id="clickMe" onclick="alert('hello')">Click
+			Me!</button>
+	</div>
+</body>
+</html>
