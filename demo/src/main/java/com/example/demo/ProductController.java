@@ -37,7 +37,7 @@ public class ProductController {
 		Statement stm = con.createStatement();
 		
 		ResultSet results;
-		results = stm.executeQuery("SELECT * FROM Products");
+		results = stm.executeQuery("SELECT * FROM Products ORDER BY `buy_quantity` DESC");
 
 		jsonGenerator.writeRaw('[');
 		results.beforeFirst();
@@ -49,6 +49,7 @@ public class ProductController {
 			jsonGenerator.writeNumberField("price", results.getDouble(4));
 			jsonGenerator.writeNumberField("product_amount", results.getInt(5));
 			jsonGenerator.writeStringField("url", results.getString(6));
+			jsonGenerator.writeStringField("buy_quantity", results.getString(7));
 			jsonGenerator.writeEndObject();
 			if (!results.isLast()) {
 				jsonGenerator.writeRaw(',');
