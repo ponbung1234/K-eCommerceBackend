@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -20,6 +21,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 
 @RestController
 @RequestMapping("/category")
+@CrossOrigin(origins = "http://localhost:4200",allowedHeaders="*")
 public class CategoryController {
 
 
