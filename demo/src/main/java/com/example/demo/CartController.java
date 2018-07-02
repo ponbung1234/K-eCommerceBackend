@@ -30,7 +30,7 @@ public class CartController {
 		Database db = new Database();
 		Connection con = db.connect();
 		Statement stm = con.createStatement();
-		ResultSet s = stm.executeQuery("SELECT * FROM Cart WHERE ecustomer_id = "+Integer.parseInt(ecus_id));
+		ResultSet s = stm.executeQuery("SELECT * FROM Cart join Products on Cart.product_id = Products.product_id WHERE ecustomer_id = "+Integer.parseInt("1"));
 		if(!s.next())
 			return "Nothing in the cart for this user";
 		jsonGenerator.writeRaw('[');
@@ -41,6 +41,13 @@ public class CartController {
 			jsonGenerator.writeNumberField("ecustomer_id", s.getInt(2));
 			jsonGenerator.writeNumberField("product_id", s.getInt(3));
 			jsonGenerator.writeNumberField("cart_amount", s.getInt(4));
+			jsonGenerator.writeStringField("category_id", s.getString(5));
+			jsonGenerator.writeNumberField("product_name", s.getDouble(6));
+			jsonGenerator.writeStringField("price", s.getString(7));
+			jsonGenerator.writeNumberField("product_amount", s.getDouble(8));
+			jsonGenerator.writeStringField("product_id", s.getString(9));
+			jsonGenerator.writeNumberField("pro_image_path", s.getDouble(10));
+			jsonGenerator.writeNumberField("product_description", s.getDouble(11));
 			jsonGenerator.writeEndObject();
 			if (!s.isLast()) {
 				jsonGenerator.writeRaw(',');
