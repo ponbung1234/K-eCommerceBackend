@@ -37,7 +37,7 @@ public class CategoryController {
 		Statement stm = con.createStatement();
 		
 		ResultSet results;
-		results = stm.executeQuery("SELECT * FROM Product_categories");
+		results = stm.executeQuery("SELECT * FROM product_categories");
 
 		jsonGenerator.writeRaw('[');
 		results.beforeFirst();

@@ -9,6 +9,7 @@ import java.sql.Statement;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -22,11 +23,11 @@ import com.fasterxml.jackson.core.JsonGenerator;
 
 @RestController
 @RequestMapping("/search")
+@CrossOrigin(allowedHeaders="*")
 public class SearchController {
 
 	@RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public @ResponseBody String getSearchResult(@RequestParam(value = "input", required = true) String input,
-			@RequestHeader("Host") String host)
+	public @ResponseBody String getSearchResult(@RequestParam(value = "input", required = true) String input)
 			throws SQLException, IOException {
 		JsonFactory jsonFactory = new JsonFactory();
 		ByteArrayOutputStream json_temp = new ByteArrayOutputStream();
@@ -34,16 +35,16 @@ public class SearchController {
 		Database db = new Database();
 		Connection con = db.connect();
 		Statement stm = con.createStatement();
-		ResultSet temp = stm.executeQuery("SELECT * FROM Product_categories WHERE category_name = '" + input + "'");
+		ResultSet temp = stm.executeQuery("SELECT * FROM product_categories WHERE category_name = '" + input + "'");
 
 		ResultSet results;
 		if (!temp.next()) {
-			results = stm.executeQuery("SELECT * FROM Products WHERE product_name = '" + input + "'");
+			results = stm.executeQuery("SELECT * FROM products WHERE product_name = '" + input + "'");
 
 		} else {
 
 			temp.first();
-			results = stm.executeQuery("SELECT * FROM Products WHERE category_id = " + temp.getInt(1));
+			results = stm.executeQuery("SELECT * FROM products WHERE category_id = " + temp.getInt(1));
 
 		}
 		if(!results.next()) {
@@ -68,8 +69,6 @@ public class SearchController {
 		jsonGenerator.writeRaw(']');
 		jsonGenerator.close();
 		db.close();
-
-		System.out.println("HOST = " + host);
 		return json_temp.toString();
 
 	}

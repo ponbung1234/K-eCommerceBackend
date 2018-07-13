@@ -22,6 +22,7 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/Users/kasidiskanwatchara/Downloads/mysql-connector-java-8.0.11/mysql-connector-java-8.0.11.jar"/>
+	<classpathentry kind="lib" path="/Users/kasidiskanwatchara/Downloads/jar_files/spring-session-data-redis-2.0.4.RELEASE.jar"/>
+	<classpathentry kind="lib" path="/Users/kasidiskanwatchara/Downloads/spring-security-config-5.0.6.RELEASE.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

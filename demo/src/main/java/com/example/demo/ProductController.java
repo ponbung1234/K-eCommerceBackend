@@ -21,7 +21,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 
 @RestController
 @RequestMapping("/products")
-@CrossOrigin(origins = "http://localhost:4200",allowedHeaders="*")
+@CrossOrigin(allowedHeaders="*")
 public class ProductController {
 
 
@@ -37,7 +37,7 @@ public class ProductController {
 		Statement stm = con.createStatement();
 		
 		ResultSet results;
-		results = stm.executeQuery("SELECT * FROM Products ORDER BY `buy_quantity` DESC");
+		results = stm.executeQuery("SELECT * FROM products");
 
 		jsonGenerator.writeRaw('[');
 		results.beforeFirst();
@@ -49,7 +49,8 @@ public class ProductController {
 			jsonGenerator.writeNumberField("price", results.getDouble(4));
 			jsonGenerator.writeNumberField("product_amount", results.getInt(5));
 			jsonGenerator.writeStringField("url", results.getString(6));
-			jsonGenerator.writeStringField("buy_quantity", results.getString(7));
+			jsonGenerator.writeStringField("product_description", results.getString(7));
+
 			jsonGenerator.writeEndObject();
 			if (!results.isLast()) {
 				jsonGenerator.writeRaw(',');
