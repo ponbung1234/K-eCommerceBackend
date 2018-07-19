@@ -1,12 +1,10 @@
 package com.example.demo.dao;
 
-import java.util.List;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.example.demo.model.RefundDetail;
+import com.example.demo.model.Refund;
 
-public interface RefundRepository extends JpaRepository<RefundDetail,Integer>{
-	public List<RefundDetail> findAllByid(List<Integer> product_ids);
-
+public interface RefundRepository extends JpaRepository<Refund, Integer> {
+	@SuppressWarnings("unchecked")
+	public Refund save(Refund refund);
 }

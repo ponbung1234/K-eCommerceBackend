@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.model.RefundDetail;
-import com.example.service.RefundService;
+import com.example.service.RefundDetailService;
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -24,7 +24,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 @CrossOrigin(allowedHeaders="*")
 public class RefundController {
 	@Autowired
-	private RefundService refundService;
+	private RefundDetailService refundService;
 	
 	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody String getRefund()
