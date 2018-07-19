@@ -8,4 +8,5 @@ import com.example.demo.model.Order;
 
 public interface OrderRepository extends JpaRepository<Order,Integer>{
 	public List<Order> findByecusId(int id);
+	
 }
