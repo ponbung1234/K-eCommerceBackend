@@ -14,8 +14,10 @@ public class CustomUserDetails extends Users implements UserDetails {
 	 */
 	private static final long serialVersionUID = -7758958538992125081L;
 
+	private int id;
 	public CustomUserDetails(final Users users) {
         super(users);
+        this.id=users.getId();
     }
 
     @Override
@@ -55,5 +57,8 @@ public class CustomUserDetails extends Users implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+    public int getId() {
+    	return id;
     }
 }

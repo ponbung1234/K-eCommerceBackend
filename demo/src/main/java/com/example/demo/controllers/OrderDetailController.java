@@ -7,7 +7,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -16,6 +19,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.Database;
+import com.example.demo.model.Users;
+import com.example.service.CustomUserDetailsService;
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -24,17 +29,20 @@ import com.fasterxml.jackson.core.JsonGenerator;
 @RequestMapping("/orderDetail")
 @CrossOrigin(allowedHeaders="*")
 public class OrderDetailController {
-	
+	@Autowired
+	private CustomUserDetailsService userService;
 	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody String getOrder(@RequestParam(value = "ecustomer_id", required = false) String ecus_id) throws IOException, SQLException {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		Users user = userService.loadUserByUsername(auth.getPrincipal().toString());
+
 		JsonFactory jsonFactory = new JsonFactory();
 		ByteArrayOutputStream json_temp = new ByteArrayOutputStream();
 		JsonGenerator jsonGenerator = jsonFactory.createGenerator(json_temp, JsonEncoding.UTF8);
 		Database db = new Database();
 		Connection con = db.connect();
 		Statement stm = con.createStatement();
-		ResultSet s = stm.executeQuery("select order_id,product_name,price,pro_image_path,product_description, COUNT(product_name) as amount,item_id from order_detail natural join orders,products where orders.ecustomer_id = 1 AND orders.order_id = order_detail.order_id\n" + 
-				"			AND order_detail.product_id = products.product_id group by product_name, order_id;");
+		ResultSet s = stm.executeQuery("select order_id,product_name,price,pro_image_path,product_description, COUNT(product_name) as amount,item_id ,status from order_detail natural join orders,products where orders.ecustomer_id = "+user.getId()+" AND orders.order_id = order_detail.order_id AND order_detail.product_id = products.product_id group by product_name, order_id;");
 		if(!s.next())
 			return "No order history";
 		jsonGenerator.writeRaw('[');
@@ -48,6 +56,7 @@ public class OrderDetailController {
 			jsonGenerator.writeStringField("product_description", s.getString(5));
 			jsonGenerator.writeNumberField("amount", s.getInt(6));
 			jsonGenerator.writeNumberField("item_id", s.getInt(7));
+			jsonGenerator.writeStringField("status", s.getString(8));
 
 			jsonGenerator.writeEndObject();
 			if (!s.isLast()) {

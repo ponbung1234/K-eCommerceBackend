@@ -1,66 +1,80 @@
 package com.example.demo.controllers;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
+import java.util.Iterator;
+import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.demo.Database;
-import com.fasterxml.jackson.core.JsonEncoding;
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
+import com.example.demo.model.Cart;
+import com.example.demo.model.Order;
+import com.example.demo.model.Payment;
+import com.example.demo.model.Users;
+import com.example.service.CartService;
+import com.example.service.CheckoutService;
+import com.example.service.CustomUserDetailsService;
 
 @RestController
 @RequestMapping("/checkout")
-@CrossOrigin(allowedHeaders="*")
+@CrossOrigin(allowedHeaders = "*")
 public class CheckoutController {
-	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public @ResponseBody String checkout()
-			throws SQLException, IOException {
+	@Autowired
+	private CheckoutService checkSer;
 
-		JsonFactory jsonFactory = new JsonFactory();
-		ByteArrayOutputStream json_temp = new ByteArrayOutputStream();
-		JsonGenerator jsonGenerator = jsonFactory.createGenerator(json_temp, JsonEncoding.UTF8);
-		Database db = new Database();
-		Connection con = db.connect();
-		Statement stm = con.createStatement();
-		
-		ResultSet results;
-		results = stm.executeQuery("select item_id,orders.order_id, product_name,price,pro_image_path,product_description, date,products.product_id from products,order_detail,orders \n" + 
-				"where order_detail.product_id = products.product_id AND orders.order_id = order_detail.order_id AND orders.ecustomer_id =1;");
-		jsonGenerator.writeRaw('[');
-		results.beforeFirst();
-		while (results.next()) {
-			jsonGenerator.writeStartObject();
-			jsonGenerator.writeNumberField("item_id", results.getInt(1));
-			jsonGenerator.writeNumberField("order_id", results.getInt(2));
-			jsonGenerator.writeStringField("product_name", results.getString(3));
-			jsonGenerator.writeNumberField("price", results.getDouble(4));
-			jsonGenerator.writeStringField("pro_image_path", results.getString(5));
-			jsonGenerator.writeStringField("product_description", results.getString(6));
-			jsonGenerator.writeStringField("date", results.getString(7));
-			jsonGenerator.writeNumberField("product_id", results.getInt(8));
+	@Autowired
+	private CartService cartSer;
 
-			jsonGenerator.writeEndObject();
-			if (!results.isLast()) {
-				jsonGenerator.writeRaw(',');
-				jsonGenerator.writeRaw('\n');
+	@Autowired
+	private CustomUserDetailsService userService;
+
+	@RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	// total price,payment type,ecus id
+	public @ResponseBody String checkout(@RequestBody String checkout) throws SQLException, IOException {
+
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		Users user = userService.loadUserByUsername(auth.getPrincipal().toString());
+		String[] temp = checkout.split(",");
+		double totalPrice = Double.parseDouble(temp[0]);
+
+		int ecusID = user.getId();
+
+		List<Cart> carts = checkSer.selectAllCart(ecusID);
+		checkSer.insertOrder(new Order(ecusID, totalPrice));
+		Order order = checkSer.findByecusIdAndPrice(ecusID, totalPrice);
+		int order_id = order.getOrder_id();
+		System.out.println("order_id = " + order_id);
+		Payment payment = new Payment(order_id, "Unpaid", temp[1]);
+		checkSer.insertPayment(payment);
+		Iterator<Cart> itr = carts.iterator();
+		order.setOrder_id(order_id);
+
+		while (itr.hasNext()) {
+			Cart cart = itr.next();
+			for (int i = 0; i < cart.getCart_amount(); i++) {
+				Integer	 lastItemId = checkSer.getLastItemId();
+				System.out.println("lastItemId = "+lastItemId);
+				if(checkSer.getLastItemId() == null)
+					lastItemId = 0;
+				else
+					lastItemId = checkSer.getLastItemId();
+				
+				checkSer.insertOrderDetail(order_id, lastItemId + 1, cart.getProduct_id(), "Confirmed");
 			}
-		}
-		jsonGenerator.writeRaw(']');
-		jsonGenerator.close();
-		db.close();
 
-		return json_temp.toString();
+			cartSer.deleteCart(cart.getId(), ecusID, cart.getProduct_id());
+		}
+
+		return null;
 
 	}
 }

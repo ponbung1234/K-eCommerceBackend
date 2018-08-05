@@ -82,6 +82,12 @@ public class RefundDetail {
 	public void setOrderDetail(OrderDetail orderDetail) {
 		this.orderDetail = orderDetail;
 	}
+	@Override
+	public String toString() {
+		return "RefundDetail [id=" + id + ", category_id=" + category_id + ", product_name=" + product_name + ", price="
+				+ price + ", product_amount=" + product_amount + ", pro_image_path=" + pro_image_path
+				 + ", orderDetail=" + orderDetail + "]";
+	}
 	
 	
 }

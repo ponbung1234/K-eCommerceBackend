@@ -1,13 +1,8 @@
 package com.example.demo.model;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -22,9 +17,15 @@ public class Order {
 	private double price;
 	@Column(name = "date")
 	private String date;
+	
+	public Order(int ecusId, double totalPrice){
+		this.price = totalPrice;
+		this.ecusId = ecusId;
+	}
+	public Order() {
+		
+	}
 
-	
-	
 	public int getEcusId() {
 		return ecusId;
 	}
@@ -55,6 +56,10 @@ public class Order {
 	}
 	public void setDate(String date) {
 		this.date = date;
+	}
+	@Override
+	public String toString() {
+		return "Order [order_id=" + order_id + ", ecusId=" + ecusId + ", price=" + price + ", date=" + date + "]";
 	}
 	
 }

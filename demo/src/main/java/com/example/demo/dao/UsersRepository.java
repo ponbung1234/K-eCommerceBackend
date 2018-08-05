@@ -1,10 +1,12 @@
 package com.example.demo.dao;
 
-import com.example.demo.model.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
-import java.util.Optional;
+import com.example.demo.model.Users;
 
 public interface UsersRepository extends JpaRepository<Users, Integer> {
-    Optional<Users> findByName(String username);
+	@Query(value = "SELECT * FROM ecustomers WHERE username = :name" , nativeQuery = true)
+    Users findByName(@Param(value = "name")String username);
 }

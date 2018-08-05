@@ -8,5 +8,8 @@ import com.example.demo.model.Order;
 
 public interface OrderRepository extends JpaRepository<Order,Integer>{
 	public List<Order> findByecusId(int id);
+	@SuppressWarnings("unchecked")
+	public Order save(Order order);
 	
+	public Order findByecusIdAndPrice(int ecusId,double price);
 }

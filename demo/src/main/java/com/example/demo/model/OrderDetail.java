@@ -13,19 +13,32 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "order_detail")
 public class OrderDetail {
-	@Id
 	@Column(name = "order_id")
 	private int orderId;
 	@Column(name = "product_id")
 	private int product_id;
+	@Id
 	@Column(name = "item_id")
 	private int item_id;
 	@Column(name = "status")
 	private String status;
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	@JoinTable(name = "order_orderDetail", joinColumns = @JoinColumn(name = "order_id"), inverseJoinColumns = @JoinColumn(name = "order_id"))
+	@JoinTable(name = "order_orderDetail", joinColumns = @JoinColumn(name = "item_id", referencedColumnName = "item_id"), inverseJoinColumns = @JoinColumn(name = "order_id", referencedColumnName = "order_id"))
 	private Order order;
 
+	
+	public OrderDetail(int orderId, int product_id, String status, Order order, int item_id) {
+		super();
+		this.orderId = orderId;
+		this.product_id = product_id;
+		this.status = status;
+		this.order = order;
+		this.item_id = item_id;
+		
+	}
+	public OrderDetail() {
+		
+	}
 	public int getOrder_id() {
 		return orderId;
 	}
@@ -55,6 +68,11 @@ public class OrderDetail {
 	}
 	public void setOrder(Order order) {
 		this.order = order;
+	}
+	@Override
+	public String toString() {
+		return "OrderDetail [orderId=" + orderId + ", product_id=" + product_id + ", item_id=" + item_id + ", status="
+				+ status + ", order=" + order + "]";
 	}
 	
 }
